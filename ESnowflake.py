@@ -1,5 +1,5 @@
 """
-Ejemplo de esquema estrella:
+Ejemplo de esquema Snowflake o copo de nieve: en este caso hay relaciones entre tablas de dimensiones
 Suponemos que tenemos una base de datos de una tienda en línea y queremos realizar consultas sobre las ventas. 
 """
 
@@ -14,7 +14,7 @@ connection = psycopg2.connect(
     host="localhost",
     user="postgres",
     password=config.password,
-    database="27mayo2023",
+    database="28mayo2023",
     port="5432"
 )
 
@@ -34,15 +34,19 @@ def crear_tabla():
     #En Esquema de Estrella, se relacionan todas a la tabla de hechos (ventas). 
     
     #a) Tabla "Productos":
-    querya = "CREATE TABLE IF NOT EXISTS productos(producto_id INT  primary key NOT NULL, nombre_producto VARCHAR(50), categoría VARCHAR(50), precio FLOAT);"
+    querya = "CREATE TABLE IF NOT EXISTS productos(producto_id INT  primary key NOT NULL, nombre_producto VARCHAR(50), categoria_id INT, precio FLOAT, FOREIGN KEY (categoria_id) REFERENCES categorias(categoria_id));"
 
+    #a1) Tabla "Categoria":
+    querya1 = "CREATE TABLE IF NOT EXISTS categorias(categoria_id INT primary key NOT NULL, categoría VARCHAR(50));"
+
+ 
     #b) Tabla "Clientes":
     queryb = "CREATE TABLE IF NOT EXISTS clientes(cliente_id INT  primary key NOT NULL, nombre_cliente VARCHAR(30), dirección VARCHAR(50), ciudad VARCHAR(30));"
 
     #c) Tabla "Tiendas":
     queryc = "CREATE TABLE IF NOT EXISTS tiendas(tienda_id INT  primary key NOT NULL, nombre_tienda VARCHAR(30), ubicación VARCHAR(50));"
 
-    for consulta in [querya,queryb,queryc,query1]:
+    for consulta in [querya1,querya,queryb,queryc,query1]:
         try:
             cursor.execute(consulta)
             print("La tabla ha sido creada exitosamente")
